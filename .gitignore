@@ -1,0 +1,38 @@
+# Binaries for programs and plugins
+*.exe
+*.exe~
+*.dll
+*.so
+*.dylib
+
+# Output of the 'go build' command
+*.out
+
+# Go workspace file
+go.work
+
+# Ignore the .env file containing environment variables
+.env
+
+# Ignore log files
+*.log
+
+# Dependency directories (vendor/)
+vendor/
+
+# IDE/editor specific files
+.vscode/
+.idea/
+*.swp
+*~
+.DS_Store
+
+# Go test binary
+*.test
+
+# Profiling data
+*.prof
+
+# Coverage reports
+coverage.out
+
