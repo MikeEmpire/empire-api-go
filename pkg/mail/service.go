@@ -33,7 +33,11 @@ func AuthenticateGmailAccount(c *gin.Context) {
 		return
 	}
 
-	client := getClient(config)
+	client, clientErr := getClient(config)
+	if clientErr != nil {
+		c.JSON(http.StatusInternalServerError, gin.H{"error": fmt.Sprintf("Unable to retrieve Gmail client: %v", clientErr)})
+		return
+	}
 
 	srv, err := gmail.NewService(ctx, option.WithHTTPClient(client))
 
