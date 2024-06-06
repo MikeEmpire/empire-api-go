@@ -12,6 +12,6 @@ func SetupRouter(r *gin.Engine) {
 	{
 		v1.GET("/auth", mail.AuthenticateGmailAccount)
 		v1.GET("/auth/callback", mail.AuthCallback)
-		// Add more routes here
+		v1.POST("/test", mail.TestSendEmail)
 	}
 }

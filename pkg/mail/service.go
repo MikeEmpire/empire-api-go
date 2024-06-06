@@ -2,9 +2,13 @@ package mail
 
 import (
 	"context"
+	"crypto/tls"
 	"fmt"
+	"log"
 	"net/http"
+	"net/smtp"
 	"os"
+	"strconv"
 
 	"github.com/gin-gonic/gin"
 	"golang.org/x/oauth2/google"
@@ -73,4 +77,62 @@ func AuthCallback(c *gin.Context) {
 		}
 	}
 	c.JSON(http.StatusOK, gin.H{"message": "Success!", "token": token})
+}
+
+func TestSendEmail(c *gin.Context) {
+	senderEmail := os.Getenv("EMAIL_USERNAME")
+	senderPassword := os.Getenv("EMAIL_PASSWORD")
+	recipientEmail := "aolie1794@gmail.com"
+	smtpServer := "smtp.gmail.com"
+	smtpPort := 587
+	resultMsg := "Checking the temp!"
+
+	// Send email notification
+	auth := smtp.PlainAuth("", senderEmail, senderPassword, smtpServer)
+	client, err := smtp.Dial(smtpServer + ":" + strconv.Itoa(smtpPort))
+	if err != nil {
+		log.Fatal(err)
+	}
+
+	tlsConfig := &tls.Config{
+		ServerName: smtpServer,
+	}
+
+	if err := client.StartTLS(tlsConfig); err != nil {
+		log.Fatal(err)
+	}
+
+	if err := client.Auth(auth); err != nil {
+		log.Fatal(err)
+	}
+
+	if err := client.Mail(senderEmail); err != nil {
+		log.Fatal(err)
+	}
+
+	if err := client.Rcpt(recipientEmail); err != nil {
+		log.Fatal(err)
+	}
+
+	writer, err := client.Data()
+	if err != nil {
+		log.Fatal(err)
+	}
+
+	emailMessage := []byte("To: " + recipientEmail + "\r\n" +
+		"Subject: Digital Agenda Update\r\n" +
+		"\r\n" + resultMsg)
+
+	if _, err := writer.Write(emailMessage); err != nil {
+		log.Fatal(err)
+	}
+
+	if err := writer.Close(); err != nil {
+		log.Fatal(err)
+	}
+
+	if err := client.Quit(); err != nil {
+		log.Fatal(err)
+	}
+
 }
