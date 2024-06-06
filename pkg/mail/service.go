@@ -4,7 +4,6 @@ import (
 	"context"
 	"crypto/tls"
 	"fmt"
-	"log"
 	"net/http"
 	"net/smtp"
 	"os"
@@ -31,7 +30,7 @@ func AuthenticateGmailAccount(c *gin.Context) {
 		return
 	}
 
-	config, err := google.ConfigFromJSON(b, gmail.GmailReadonlyScope)
+	config, err := google.ConfigFromJSON(b, gmail.GmailSendScope)
 	if err != nil {
 		c.JSON(http.StatusInternalServerError, gin.H{"error": fmt.Sprintf("Unable to parse client secret file to config: %v", err)})
 		return
@@ -91,7 +90,8 @@ func TestSendEmail(c *gin.Context) {
 	auth := smtp.PlainAuth("", senderEmail, senderPassword, smtpServer)
 	client, err := smtp.Dial(smtpServer + ":" + strconv.Itoa(smtpPort))
 	if err != nil {
-		log.Fatal(err)
+		c.JSON(http.StatusInternalServerError, gin.H{"message": err.Error()})
+		return
 	}
 
 	tlsConfig := &tls.Config{
@@ -99,24 +99,29 @@ func TestSendEmail(c *gin.Context) {
 	}
 
 	if err := client.StartTLS(tlsConfig); err != nil {
-		log.Fatal(err)
+		c.JSON(http.StatusInternalServerError, gin.H{"message": err.Error()})
+		return
 	}
 
 	if err := client.Auth(auth); err != nil {
-		log.Fatal(err)
+		c.JSON(http.StatusInternalServerError, gin.H{"message": err.Error()})
+		return
 	}
 
 	if err := client.Mail(senderEmail); err != nil {
-		log.Fatal(err)
+		c.JSON(http.StatusInternalServerError, gin.H{"message": err.Error()})
+		return
 	}
 
 	if err := client.Rcpt(recipientEmail); err != nil {
-		log.Fatal(err)
+		c.JSON(http.StatusInternalServerError, gin.H{"message": err.Error()})
+		return
 	}
 
 	writer, err := client.Data()
 	if err != nil {
-		log.Fatal(err)
+		c.JSON(http.StatusInternalServerError, gin.H{"message": err.Error()})
+		return
 	}
 
 	emailMessage := []byte("To: " + recipientEmail + "\r\n" +
@@ -124,15 +129,18 @@ func TestSendEmail(c *gin.Context) {
 		"\r\n" + resultMsg)
 
 	if _, err := writer.Write(emailMessage); err != nil {
-		log.Fatal(err)
+		c.JSON(http.StatusInternalServerError, gin.H{"message": err.Error()})
+		return
 	}
 
 	if err := writer.Close(); err != nil {
-		log.Fatal(err)
+		c.JSON(http.StatusInternalServerError, gin.H{"message": err.Error()})
+		return
 	}
 
 	if err := client.Quit(); err != nil {
-		log.Fatal(err)
+		c.JSON(http.StatusInternalServerError, gin.H{"message": err.Error()})
+		return
 	}
 
 }
