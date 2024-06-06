@@ -3,7 +3,6 @@ package mail
 import (
 	"context"
 	"fmt"
-	"log"
 	"net/http"
 	"os"
 
@@ -24,12 +23,14 @@ func AuthenticateGmailAccount(c *gin.Context) {
 	ctx := context.Background()
 	b, err := os.ReadFile("creds.json")
 	if err != nil {
-		log.Fatalf("Unable to read client secret file: %v", err)
+		c.JSON(http.StatusNotFound, gin.H{"error": "Unable to find credentials"})
+		return
 	}
 
 	config, err := google.ConfigFromJSON(b, gmail.GmailReadonlyScope)
 	if err != nil {
-		log.Fatalf("Unable to parse client secret file to config: %v", err)
+		c.JSON(http.StatusInternalServerError, gin.H{"error": fmt.Sprintf("Unable to parse client secret file to config: %v", err)})
+		return
 	}
 
 	client := getClient(config)
@@ -37,17 +38,14 @@ func AuthenticateGmailAccount(c *gin.Context) {
 	srv, err := gmail.NewService(ctx, option.WithHTTPClient(client))
 
 	if err != nil {
-		log.Fatalf("Unable to retrieve Gmail client: %v", err)
+		c.JSON(http.StatusInternalServerError, gin.H{"error": fmt.Sprintf("Unable to retrieve Gmail client: %v", err)})
+		return
 	}
 
 	usr := "me"
 	r, err := srv.Users.Labels.List(usr).Do()
 	if err != nil {
-		log.Fatalf("Unable to retrieve labels: %v", err)
-	}
-
-	if len(r.Labels) == 0 {
-		fmt.Println("No labels found.")
+		c.JSON(http.StatusInternalServerError, gin.H{"error": fmt.Sprintf("Unable to retrieve labels: %v", err)})
 		return
 	}
 
