@@ -72,3 +72,9 @@ Create a `.env` file in the root of the project to manage your environment varia
 2. Once you have the credentials saved in the root folder, run the `api/v1/auth` endpoint.
 
 3. Get the authorization code and copy and paste it into the terminal and press enter. From there, the `token.json` file will be saved, and things will be good to go.
+
+### Steps to getting Gmail Password
+
+The [Instructions](https://support.google.com/accounts/answer/185833?hl=en&sjid=5919955758469844792-NC) to generate the app password and set it in the .env file
+
+Please refer to the sample.env file for more information on how to configure your environment

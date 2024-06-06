@@ -2,12 +2,10 @@ package mail
 
 import (
 	"context"
-	"crypto/tls"
 	"fmt"
 	"net/http"
 	"net/smtp"
 	"os"
-	"strconv"
 
 	"github.com/gin-gonic/gin"
 	"golang.org/x/oauth2/google"
@@ -79,68 +77,22 @@ func AuthCallback(c *gin.Context) {
 }
 
 func TestSendEmail(c *gin.Context) {
-	senderEmail := os.Getenv("EMAIL_USERNAME")
-	senderPassword := os.Getenv("EMAIL_PASSWORD")
-	recipientEmail := "aolie1794@gmail.com"
-	smtpServer := "smtp.gmail.com"
-	smtpPort := 587
-	resultMsg := "Checking the temp!"
+	from := os.Getenv("EMAIL_USERNAME")
+	pass := os.Getenv("EMAIL_PASSWORD")
+	to := "aolie1794@gmail.com"
 
-	// Send email notification
-	auth := smtp.PlainAuth("", senderEmail, senderPassword, smtpServer)
-	client, err := smtp.Dial(smtpServer + ":" + strconv.Itoa(smtpPort))
+	msg := "From: " + from + "\n" +
+		"To: " + to + "\n" +
+		"Subject: Hello there\n\n" +
+		"Helllooooo"
+
+	err := smtp.SendMail("smtp.gmail.com:587",
+		smtp.PlainAuth("", from, pass, "smtp.gmail.com"),
+		from, []string{to}, []byte(msg))
+
 	if err != nil {
 		c.JSON(http.StatusInternalServerError, gin.H{"message": err.Error()})
 		return
 	}
-
-	tlsConfig := &tls.Config{
-		ServerName: smtpServer,
-	}
-
-	if err := client.StartTLS(tlsConfig); err != nil {
-		c.JSON(http.StatusInternalServerError, gin.H{"message": err.Error()})
-		return
-	}
-
-	if err := client.Auth(auth); err != nil {
-		c.JSON(http.StatusInternalServerError, gin.H{"message": err.Error()})
-		return
-	}
-
-	if err := client.Mail(senderEmail); err != nil {
-		c.JSON(http.StatusInternalServerError, gin.H{"message": err.Error()})
-		return
-	}
-
-	if err := client.Rcpt(recipientEmail); err != nil {
-		c.JSON(http.StatusInternalServerError, gin.H{"message": err.Error()})
-		return
-	}
-
-	writer, err := client.Data()
-	if err != nil {
-		c.JSON(http.StatusInternalServerError, gin.H{"message": err.Error()})
-		return
-	}
-
-	emailMessage := []byte("To: " + recipientEmail + "\r\n" +
-		"Subject: Digital Agenda Update\r\n" +
-		"\r\n" + resultMsg)
-
-	if _, err := writer.Write(emailMessage); err != nil {
-		c.JSON(http.StatusInternalServerError, gin.H{"message": err.Error()})
-		return
-	}
-
-	if err := writer.Close(); err != nil {
-		c.JSON(http.StatusInternalServerError, gin.H{"message": err.Error()})
-		return
-	}
-
-	if err := client.Quit(); err != nil {
-		c.JSON(http.StatusInternalServerError, gin.H{"message": err.Error()})
-		return
-	}
-
+	c.JSON(http.StatusOK, gin.H{"message": "Success!"})
 }
