@@ -24,12 +24,15 @@ func HandleContactForm(c *gin.Context) {
 	pass := os.Getenv("EMAIL_PASSWORD")
 
 	to := "cairambelu@gmail.com"
-	contactFormMessage := contactFormInput.Message
+	// Construct the email body
+	emailBody := "Name: " + contactFormInput.Name + "\n" +
+		"Email: " + contactFormInput.Email + "\n" +
+		"Message: " + contactFormInput.Message
 
 	msg := "From: " + from + "\n" +
 		"To: " + to + "\n" +
 		"Subject: Contact Form Submission\n\n" +
-		contactFormMessage
+		emailBody
 
 	err := smtp.SendMail("smtp.gmail.com:587",
 		smtp.PlainAuth("", from, pass, "smtp.gmail.com"),
