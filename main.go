@@ -4,6 +4,7 @@ import (
 	"empire-api-go/config"
 	"empire-api-go/routes"
 
+	"github.com/gin-contrib/cors"
 	"github.com/gin-gonic/gin"
 )
 
@@ -13,6 +14,9 @@ func main() {
 
 	// Initialize the router
 	r := gin.Default()
+
+	// Initialize CORS middleware
+	r.Use(cors.New(config.CORSConfig()))
 
 	// Setup routes
 	routes.SetupRouter(r)
