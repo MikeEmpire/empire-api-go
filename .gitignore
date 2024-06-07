@@ -38,3 +38,5 @@ coverage.out
 
 creds.json
 token.json
+
+bin/deploy.sh
