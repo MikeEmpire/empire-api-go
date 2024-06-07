@@ -1,23 +1,32 @@
 # Empire API
 
+## Production URL
+
+<https://empire-api.afam.app>
+
+Click [here](https://empire-api.afam.app) to view the app
+
 ## Overview
 
 This is a scalable API built using the Gin web framework in Go. The project is structured to promote clean code, maintainability, and scalability.
 
 ## Project Structure
 
+```bash
 empire-api-go/
 ├── go.mod
 ├── go.sum
 ├── main.go
+├── .env
 ├── pkg/
-│ └── handlers/
-│ ├── user.go
-│ └── product.go
+│ └── mail/
+| |----helpers.go
+| |----service.go
 ├── routes/
 │ └── routes.go
 └── config/
-└── config.go
+└─--- config.go
+```
 
 - **main.go**: The entry point of the application.
 - **pkg/handlers**: Contains the handler functions for different routes.
@@ -36,28 +45,28 @@ empire-api-go/
 
 1. Clone the repository:
 
-    ```sh
-    git clone https://github.com/yourusername/your_project_name.git
-    ```
+   ```sh
+   git clone https://github.com/yourusername/your_project_name.git
+   ```
 
 2. Navigate to the project directory:
 
-    ```sh
-    cd your_project_name
-    ```
+   ```sh
+   cd your_project_name
+   ```
 
 3. Initialize the Go module:
 
-    ```sh
-    go mod init your_project_name
-    ```
+   ```sh
+   go mod init your_project_name
+   ```
 
 4. Install the dependencies:
 
-    ```sh
-    go get -u github.com/gin-gonic/gin
-    go get github.com/joho/godotenv
-    ```
+   ```sh
+   go get -u github.com/gin-gonic/gin
+   go get github.com/joho/godotenv
+   ```
 
 ### Configuration
 
@@ -78,3 +87,7 @@ Create a `.env` file in the root of the project to manage your environment varia
 The [Instructions](https://support.google.com/accounts/answer/185833?hl=en&sjid=5919955758469844792-NC) to generate the app password and set it in the .env file
 
 Please refer to the sample.env file for more information on how to configure your environment
+
+## License
+
+None
