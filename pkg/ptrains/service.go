@@ -9,9 +9,10 @@ import (
 )
 
 type ContactForm struct {
-	Name    string `json:"name"`
-	Email   string `json:"email"`
-	Message string `json:"message"`
+	Name        string `json:"name"`
+	Email       string `json:"email"`
+	Message     string `json:"message"`
+	PhoneNumber string `json:"phoneNumber"`
 }
 
 func HandleContactForm(c *gin.Context) {
@@ -27,7 +28,8 @@ func HandleContactForm(c *gin.Context) {
 	// Construct the email body
 	emailBody := "Name: " + contactFormInput.Name + "\n" +
 		"Email: " + contactFormInput.Email + "\n" +
-		"Message: " + contactFormInput.Message
+		"Message: " + contactFormInput.Message + "\n" +
+		"Phone Number: " + contactFormInput.PhoneNumber + "\n"
 
 	msg := "From: " + from + "\n" +
 		"To: " + to + "\n" +
