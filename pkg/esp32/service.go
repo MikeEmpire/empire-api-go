@@ -2,6 +2,8 @@ package esp32
 
 import (
 	"database/sql"
+	"os"
+	"path/filepath"
 
 	_ "github.com/mattn/go-sqlite3"
 )
@@ -11,6 +13,12 @@ type Service struct {
 }
 
 func NewService(dbPath string) (*Service, error) {
+	// Ensure directory exists
+	dir := filepath.Dir(dbPath)
+	if err := os.MkdirAll(dir, 0755); err != nil {
+		return nil, err
+	}
+
 	db, err := sql.Open("sqlite3", dbPath)
 	if err != nil {
 		return nil, err
