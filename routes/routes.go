@@ -1,6 +1,7 @@
 package routes
 
 import (
+	"empire-api-go/pkg/esp32"
 	"empire-api-go/pkg/mail"
 	"empire-api-go/pkg/ptrains"
 	"net/http"
@@ -8,7 +9,7 @@ import (
 	"github.com/gin-gonic/gin"
 )
 
-func SetupRouter(r *gin.Engine) {
+func SetupRouter(r *gin.Engine, esp32Handlers *esp32.Handlers) {
 	// Default route
 	r.GET("/", func(c *gin.Context) {
 		c.JSON(http.StatusOK, gin.H{"message": "Welcome to the Empire API!"})
@@ -24,6 +25,13 @@ func SetupRouter(r *gin.Engine) {
 		ptrain := v1.Group("/ptrains")
 		{
 			ptrain.POST("/contact", ptrains.HandleContactForm)
+		}
+
+		esp32Group := v1.Group("/esp32")
+		{
+			esp32Group.POST("/sensor-data", esp32Handlers.SaveSensorData)
+			esp32Group.GET("/readings/:device_id", esp32Handlers.GetReadings)
+			esp32Group.GET("/stats/:device_id", esp32Handlers.GetStats)
 		}
 	}
 }
