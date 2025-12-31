@@ -49,10 +49,10 @@ func HandleNewsletterSignup(c *gin.Context) {
 	// }
 
 	// 2. Send confirmation email to user (async)
-	go sendConfirmationEmail(email)
+	sendConfirmationEmail(email)
 
 	// 3. Notify yourself (async)
-	go sendAdminNotification(email)
+	sendAdminNotification(email)
 
 	c.JSON(http.StatusOK, gin.H{"message": "Success!"})
 }
